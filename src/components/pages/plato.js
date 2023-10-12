@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
+import { FirebaseContext } from '../../firebase'
 
 const Plato = () => {
+
+    const { firebase } = useContext(FirebaseContext);
+    console.log ({FirebaseContext});
 
     const formik = useFormik({
         initialValues: {
@@ -28,15 +32,20 @@ const Plato = () => {
                 .min(5, 'La descripcion debe tener minimo 5 caracteres')
                 .required('La descripcion del plato es requerida'),
         }),
-        onSubmit: datos => {
-            console.log(datos);
+        onSubmit: plato => {
+            try {
+                firebase.db.collection('plato').add(plato);
+            }
+            catch (e) {
+                console.log(e);
+            }
         }
     })
     return (
         <>
             <div className="flex justify-center mt-10">
                 <div className="w-full max-w-3xl">
-                    <form>
+                    <form onSubmit={formik.handleSubmit}>
                         <h1 className="text-sky-600 m-4 font-light text-3xl">Elija el plato</h1>
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">Nombre del plato</label>

@@ -6,20 +6,27 @@ import Menu from './components/pages/Menu';
 import Orden from './components/pages/ordenes';
 import Plato from './components/pages/plato';
 import Sidebar from './components/ui/Sidebar.js';
+import firebase, { FirebaseContext } from './firebase';
 
 function App() {
   return (
-    <div className='md:flex min-h-screen'>
-      <Sidebar />
-      <div className='md:w-3/5 xl:w-4/5 p-6'>
-        <Routes>
-          <Route path='/' element={<Menu />}></Route>
-          <Route path='/orden' element={<Orden />}></Route>
-          <Route path='/plato' element={<Plato />}></Route>
-          <Route path='/menu' element={<Menu />}></Route>
-        </Routes>
+    <FirebaseContext.Provider
+    value = {{
+      firebase
+    }}
+    >
+      <div className='md:flex min-h-screen'>
+        <Sidebar />
+        <div className='md:w-3/5 xl:w-4/5 p-6'>
+          <Routes>
+            <Route path='/' element={<Menu />}></Route>
+            <Route path='/orden' element={<Orden />}></Route>
+            <Route path='/plato' element={<Plato />}></Route>
+            <Route path='/menu' element={<Menu />}></Route>
+          </Routes>
+        </div>
       </div>
-    </div>
+    </FirebaseContext.Provider>
     // <div className="App">
     //   <header className="App-header">
     //      <img src="../public/Minecrabackground.png" className="App-logo" alt="logo" />
