@@ -1,13 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { FirebaseContext } from '../../firebase'
+import FileUploader from 'react-firebase-file-uploader';
+import { useNavigate } from "react-router-dom";
+import { getStorage, ref } from 'firebase/storage';
+
+const storage = getStorage();
+const storageRef = ref(storage, 'imgproductos'); // Crear una referencia a la carpeta 'imgproductos'
+
 
 const Plato = () => {
 
-    const { firebase } = useContext(FirebaseContext);
-    console.log ({FirebaseContext});
+    const [subuendo, setSubiendo] = useState(false);
+    const [progreso, setProgreso] = useState(0);
+    const [urlImagen, setUrlimagen] = useState('');
 
+    const { firebase } = useContext(FirebaseContext);
+    console.log({ FirebaseContext });
+    const navigate = useNavigate();
     const formik = useFormik({
         initialValues: {
             nombre: '',
@@ -41,6 +52,15 @@ const Plato = () => {
             }
         }
     })
+
+    //metodos para el manejo de imágenes
+    const handleUploadStart = () => {
+
+    }
+    const handleUploadError = () => { }
+    const handleUploadSuccess = () => { }
+    const handleProgress = () => { }
+
     return (
         <>
             <div className="flex justify-center mt-10">
@@ -58,6 +78,7 @@ const Plato = () => {
                                 onBlur={formik.handleBlur}
                             />
                         </div>
+                        {formik.touched.nombre && formik.errors.nombre ? (<p className="text-red-700">{formik.errors.nombre}</p>) : null}
 
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="precio">Precio del plato</label>
@@ -87,16 +108,27 @@ const Plato = () => {
                                 <option value="Ensalada">Ensalada</option>
                             </select>
                         </div>
+                        {formik.touched.categoria && formik.errors.categoria ? (<p className="text-red-700">{formik.errors.categoria}</p>) : null}
 
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imagen">imagen del plato</label>
-                            <input className="shadow appearance-none border rounded w-full py-2 text-gray-700 leading-tight focus:outline-none"
+                            {/* <input className="shadow appearance-none border rounded w-full py-2 text-gray-700 leading-tight focus:outline-none"
                                 id="imagen"
                                 type="file"
                                 accept="png"
                                 value={formik.values.imagen}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
+                            /> */}
+                            <FileUploader
+                                accept="imagen/*"
+                                name="imagen"
+                                randomizeFilename
+                                storageRef={storageRef} // Pasa la referencia al componente FileUploader
+                                onUploadStart={handleUploadStart}
+                                onUploadError={handleUploadError}
+                                onUploadSuccess={handleUploadSuccess}
+                                onProgress={handleProgress}
                             />
                         </div>
 
@@ -115,7 +147,7 @@ const Plato = () => {
                         <input className="bg-gray-800 hover:bg-gray-900 w-full mt-5 p-2 text-white uppercase font-bold"
                             value="Agregar"
                             id="enviar"
-                            type="submit" />
+                            type="submit"/>
 
                     </form>
                 </div>
