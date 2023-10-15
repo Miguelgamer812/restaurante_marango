@@ -40,7 +40,7 @@ const Plato = () => {
                 .required('El precio del plato es requerido'),
 
             categoria: Yup.string()
-                .min(5, 'La categoria debe tener minimo 5 caracteres')
+                .min(0, 'La categoria debe tener minimo 5 caracteres')
                 .required('la categoria del plato es requerida'),
             descripcion: Yup.string()
                 .min(5, 'La descripcion debe tener minimo 5 caracteres')

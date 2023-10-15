@@ -22,28 +22,36 @@ const VerPlatos = ({ id }) => {
 
   const { nombre, imagen, existencia, categoria, precio, descripcion } = platoData;
 
+  const actualizarExistencias = () => {
+    const nuevaExistencia = !existencia; // Cambiar el valor de existencia
+    try {
+      firebase.db.collection('plato').doc(id).update({ existencia: nuevaExistencia });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <>
-      <div className='w-full px-3 mb-4'>
-        <div className='p-5 shadow-md bg-white'>
-          <div className='lg:flex'>
-            <img src={imagen} alt='Imagen de platillo' />
-            <label>
-              <span>Existencias</span>
-              <select value={existencia ? 'true' : 'false'}>
-                <option value='true'>Disponible</option>
-                <option value='false'>No Disponible</option>
-              </select>
-            </label>
-            <div>
-              <p>{nombre}</p>
-              <p>{categoria}</p>
-              <p>{descripcion}</p>
-              <p>$ {precio}</p>
-            </div>
+      <div className='plato-item'>
+        <img className='plato-imagen' src={imagen} alt='Imagen de platillo' />
+        <div className='plato-info'>
+          <label>
+            <span>Existencias</span>
+            <select value={existencia} onChange={actualizarExistencias}>
+              <option value='true'>Disponible</option>
+              <option value='false'>No Disponible</option>
+            </select>
+          </label>
+          <div>
+            <p>{nombre}</p>
+            <p>{categoria}</p>
+            <p>{descripcion}</p>
+            <p>$ {precio}</p>
           </div>
         </div>
       </div>
+      <hr></hr>
     </>
   );
 };
