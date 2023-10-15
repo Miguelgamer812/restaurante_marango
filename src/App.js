@@ -19,10 +19,10 @@ function App() {
         <Sidebar />
         <div className='md:w-3/5 xl:w-4/5 p-6'>
           <Routes>
-            <Route path='/' element={<Menu />}></Route>
-            <Route path='/orden' element={<Orden />}></Route>
-            <Route path='/plato' element={<Plato />}></Route>
-            <Route path='/menu' element={<Menu />}></Route>
+            <Route path='/' element={<Menu/>}></Route>
+            <Route path='/orden' element={<Orden/>}></Route>
+            <Route path='/plato' element={<Plato/>}></Route>
+            <Route path='/menu' element={<Menu/>}></Route>
           </Routes>
         </div>
       </div>

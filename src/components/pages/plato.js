@@ -4,21 +4,24 @@ import * as Yup from 'yup';
 import { FirebaseContext } from '../../firebase'
 import FileUploader from 'react-firebase-file-uploader';
 import { useNavigate } from "react-router-dom";
-import { getStorage, ref } from 'firebase/storage';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 const storage = getStorage();
-const storageRef = ref(storage, 'imgproductos'); // Crear una referencia a la carpeta 'imgproductos'
+// const storageRef = ref(storage, 'imagenes'); // Crear una referencia a la carpeta 'imgproductos'
 
 
 const Plato = () => {
 
-    const [subuendo, setSubiendo] = useState(false);
+    const [subiendo, setSubiendo] = useState(false);
     const [progreso, setProgreso] = useState(0);
     const [urlImagen, setUrlimagen] = useState('');
 
     const { firebase } = useContext(FirebaseContext);
+
     console.log({ FirebaseContext });
+
     const navigate = useNavigate();
+
     const formik = useFormik({
         initialValues: {
             nombre: '',
@@ -45,7 +48,9 @@ const Plato = () => {
         }),
         onSubmit: plato => {
             try {
-                firebase.db.collection('plato').add(plato);
+                plato.existencia = true;
+                plato.imagen = firebase.db.collection('plato').add(plato);
+                navigate('/menu');
             }
             catch (e) {
                 console.log(e);
@@ -55,11 +60,41 @@ const Plato = () => {
 
     //metodos para el manejo de imágenes
     const handleUploadStart = () => {
-
+        setProgreso(0);
+        setSubiendo(true);
     }
-    const handleUploadError = () => { }
-    const handleUploadSuccess = () => { }
-    const handleProgress = () => { }
+    const handleUploadError = error => {
+        setSubiendo(false);
+        console.log(error);
+    }
+    const handleUploadSuccess = async nombreImagen => {
+        setSubiendo(false);
+        setProgreso(100);
+        try {
+            const urlImagen = await getDownloadURL(ref(storage, `imagenes/${nombreImagen}`)); // Obtiene la URL de descarga de la imagen
+            setUrlimagen(urlImagen);
+
+            // Guarda la URL de la imagen en la base de datos Firestore
+            const plato = {
+                nombre: formik.values.nombre,
+                precio: formik.values.precio,
+                categoria: formik.values.categoria,
+                imagen: urlImagen, // Agrega la URL de la imagen como un campo en tu documento Firestore
+                descripcion: formik.values.descripcion
+            };
+
+            await firebase.db.collection('plato').add(plato);
+            navigate('/menu');
+        } catch (error) {
+            console.error('Error al guardar la URL de la imagen en Firestore: ', error);
+        }
+    }
+
+
+    const handleProgress = progreso => {
+        setProgreso(progreso);
+        console.log(progreso);
+    }
 
     return (
         <>
@@ -92,6 +127,7 @@ const Plato = () => {
                                 onBlur={formik.handleBlur}
                             />
                         </div>
+                        {formik.touched.precio && formik.errors.precio ? (<p className="text-red-700">{formik.errors.precio}</p>) : null}
 
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoria">Categoria del plato</label>
@@ -121,10 +157,11 @@ const Plato = () => {
                                 onBlur={formik.handleBlur}
                             /> */}
                             <FileUploader
-                                accept="imagen/*"
+                                accept="image/*"
                                 name="imagen"
+                                id="imagen"
                                 randomizeFilename
-                                storageRef={storageRef} // Pasa la referencia al componente FileUploader
+                                storageRef={firebase.storage.ref("imagenes")} // Pasa la referencia al componente FileUploader
                                 onUploadStart={handleUploadStart}
                                 onUploadError={handleUploadError}
                                 onUploadSuccess={handleUploadSuccess}
@@ -147,7 +184,7 @@ const Plato = () => {
                         <input className="bg-gray-800 hover:bg-gray-900 w-full mt-5 p-2 text-white uppercase font-bold"
                             value="Agregar"
                             id="enviar"
-                            type="submit"/>
+                            type="submit" />
 
                     </form>
                 </div>
