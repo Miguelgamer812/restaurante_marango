@@ -25,7 +25,7 @@ const Menu = () => {
       <h1 className='text-sky-600 m-4 font-light text-3xl'>Este es el Menú</h1>
       <Link
         to='/plato'
-        className='ml-3 bg-blue-800 hover:bg-blue-400 inline-block mb-5 p-2 text-white uppercase font-bold'
+        className='ml-3 bg-gray-500 hover:bg-blue-600 inline-block mb-5 p-2 text-white uppercase font-bold'
       >
         Agregar un Plato
       </Link>

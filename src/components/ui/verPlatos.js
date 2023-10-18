@@ -17,7 +17,7 @@ const VerPlatos = ({ id }) => {
   }, [firebase.db, id]);
 
   if (!platoData) {
-    return null; // Mientras los datos se cargan, no renderizar nada o puedes mostrar un indicador de carga
+    return null; // Mientras los datos se cargan, no renderizar nada o podría mostrar un indicador de carga
   }
 
   const { nombre, imagen, existencia, categoria, precio, descripcion } = platoData;
